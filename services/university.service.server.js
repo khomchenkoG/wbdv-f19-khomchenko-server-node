@@ -5,21 +5,8 @@ app.use(bodyParser.json())
 app.listen(3000)
 
 var studentDaos = require('../data/daos/student.dao.server.js');
+var questionDaos = require('../data/daos/question.dao.server.js');
 
-
-
-
-
-
-
-function addAplusB(req, res) {
-    var a = req.params['a']
-    var b = req.params['b']
-    a = parseInt(a);
-    b = parseInt(b);
-    var c = a + b;
-    res.send("Sum is: " + c)
-};
 
 /// var username = req.query['username']
 
@@ -57,7 +44,63 @@ app.put('/api/student/:id', function (req, res) {
     }
 })
 
-app.delete('/api/student/:id')
+app.delete('/api/student/:id', function (req, res) {
+    var id = req.params['id']
+    id = parseInt(id)
+    let success = studentDaos.deleteStudent(id)
+    if (success){
+        res.send({status: "Success"})
+    } else {
+        res.status(404).send("Not found")
+    }
+})
+
+
+///////////////////////// FOR QUESTIONS ////////////////////////////////////
+
+app.get('/api/question', function (req, res) {
+    res.json(questionDaos.findAllQuestions())
+})
+
+
+app.post('/api/question', function (req, res) {
+    questionDaos.createQuestion(req.body)
+    res.send({status: "Success"})
+})
+
+app.get('/api/question/:id', function (req, res) {
+    var id = req.params['id']
+    id = parseInt(id)
+    let question = questionDaos.findQuestionById(id)
+
+    if (question){
+        res.json(question)
+    } else {
+        res.status(404).send("Not found")
+    }
+})
+
+app.put('/api/question/:id', function (req, res) {
+    var id = req.params['id']
+    id = parseInt(id)
+    let success = questionDaos.updateQuestion(id, req.body)
+    if (success){
+        res.send({status: "Success"})
+    } else {
+        res.status(404).send("Not found")
+    }
+})
+
+app.delete('/api/question/:id', function (req, res) {
+    var id = req.params['id']
+    id = parseInt(id)
+    let success = questionDaos.deleteQuestion(id)
+    if (success){
+        res.send({status: "Success"})
+    } else {
+        res.status(404).send("Not found")
+    }
+})
 
 
 
