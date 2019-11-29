@@ -1,15 +1,15 @@
-var express = require('express');
-var app = express();
-var bodyParser = require('body-parser')
+const express = require('express');
+const app = express();
+const bodyParser = require('body-parser')
 app.use(bodyParser.json())
 app.listen(3000)
 
-var studentDaos = require('../data/daos/student.dao.server.js');
-var questionDaos = require('../data/daos/question.dao.server.js');
+const studentDaos = require('../data/daos/student.dao.server.js');
+const questionDaos = require('../data/daos/question.dao.server.js');
+const answerDaos = require('../data/daos/answer.dao.server.js');
 
 
-/// var username = req.query['username']
-
+///////////////////////// FOR STUDENTS ////////////////////////////////////
 
 app.get('/api/student', function (req, res) {
     res.json(studentDaos.findAllStudents())
@@ -102,8 +102,62 @@ app.delete('/api/question/:id', function (req, res) {
     }
 })
 
+///////////////////////// FOR ANSWERS ////////////////////////////////////
+
+app.post('/api/student/:sid/question/:qid/answer', function (req, res) {
+    var sid = req.params['sid']
+    var qid = req.params['qid']
+    sid = parseInt(sid)
+    qid = parseInt(qid)
+    let success =  answerDaos.createAnswer(sid, qid, req.body)
+    if (success){
+        res.send({status: "Success"})
+    } else {
+        res.status(404).send("Not found")
+    }
+})
+
+app.get('/api/answer', function (req, res) {
+    res.json(answerDaos.findAllAnswers())
+})
+
+app.get('/api/answer/:aid', function (req, res) {
+    var id = req.params['aid']
+    id = parseInt(id)
+    res.json(answerDaos.findAnswersById(id))
+})
+
+app.get('/api/question/:qid/answer', function (req, res) {
+    var id = req.params['qid']
+    id = parseInt(id)
+    res.json(answerDaos.findAnswersByQid(id))
+})
+
+app.get('/api/student/:sid/answer', function (req, res) {
+    var id = req.params['sid']
+    id = parseInt(id)
+    res.json(answerDaos.findAnswersBySid(id))
+})
+
+app.get('/api/student/:sid/question/:qid/answer', function (req, res) {
+    var sid = req.params['sid']
+    var qid = req.params['qid']
+    sid = parseInt(sid)
+    qid = parseInt(qid)
+    res.json(answerDaos.findAnswersBySidAndQid(sid,qid))
+})
+
+app.get('/api/question/:qid/student/:sid/answer', function (req, res) {
+    var sid = req.params['sid']
+    var qid = req.params['qid']
+    sid = parseInt(sid)
+    qid = parseInt(qid)
+    res.json(answerDaos.findAnswersBySidAndQid(sid,qid))
+})
 
 
+
+///api/student/:sid/question/:qid/answer
 
 //
 // GET
